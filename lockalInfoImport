@@ -1,0 +1,8 @@
+import socket
+
+def lockalhostinfo():
+    h = socket.gethostname()
+    i = socket.gethostbyname(h)
+    print "host namw: ", h
+    print "host id: ", i
+lockalhostinfo()

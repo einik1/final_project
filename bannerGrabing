@@ -1,0 +1,9 @@
+import socket
+socket.setdefaulttimeout(2)
+sock = socket.socket()
+ip_add = raw_input("Enter ip address: ")
+port_num = int(raw_input("Enter port num: "))
+sock.connect((ip_add, port_num))
+print sock.recv(1024)
+sock.close()
+

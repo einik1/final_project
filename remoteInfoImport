@@ -1,0 +1,12 @@
+import socket
+
+def remoteInfoImport():
+    rhost = raw_input("Enter host name: \n")
+    rip = socket.gethostbyname(rhost)
+    try:
+        print "ip address of: ", rhost
+        print "is: ", rip
+    except socket.error, err_msg:
+        print "Error"
+
+remoteInfoImport()

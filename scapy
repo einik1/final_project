@@ -1,0 +1,5 @@
+from scapy.all import *
+
+dst_ip = "192.168.56.1"
+pkt = IP(dst = dst_ip)/ICMP()/"helloooowooowowow"
+send(pkt)

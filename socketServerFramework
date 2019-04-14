@@ -1,0 +1,11 @@
+import SocketServer
+
+class MyTCPHandler(SocketServer.BaseRequestHandler):
+    def handle(self):
+        self.data = self.request.recv(1024).strip()
+        print "{} : {} wrote: ".format(self.client_address[0], self.client_address[1])
+        print self.data
+        self.request.sendall(self.data.upper())
+
+server = SocketServer.TCPServer(("192.168.56.1", 4444), MyTCPHandler)
+server.serve_forever()
