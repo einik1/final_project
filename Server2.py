@@ -8,8 +8,9 @@ def send_waiting_messages(wlist1, messages_to_send1):
     for message in messages_to_send1:
         (client_socket, data) = message
         if client_socket in wlist1:
-            client_socket.send(data)
-            messages_to_send1.remove(message)
+                client_socket.send(data)
+                messages_to_send1.remove(message)
+
 
 
 server_socket = socket.socket()
@@ -31,19 +32,25 @@ while True:
             numberOfClients += 1
             print "connected to IP: %s , port: %s. number of clients is %s \n" % (address[0], address[1], numberOfClients)
         else:
-            data = current_socket.recv(1024).lower()
-            counters[current_socket][0] += 1
-            if time.time() - counters[current_socket][1] > 0.1:
-                if counters[current_socket][0]/float(time.time() - counters[current_socket][1]) > 1000:
-                    open_client_sockets.remove(current_socket)
-                    del counters[current_socket]
-                    current_socket.close()
-                    numberOfClients -= 1
-                    print 'floodattack!! connection with a client is over. number of clients is {}\n'.format(str(numberOfClients))
-                    continue
-                else:
-                    counters[current_socket][0] = 0
-                    counters[current_socket][1] = time.time()
+            try:
+                data = current_socket.recv(1024).lower()
+                counters[current_socket][0] += 1
+                if time.time() - counters[current_socket][1] > 0.1:
+                    if counters[current_socket][0]/float(time.time() - counters[current_socket][1]) > 1000:
+                        open_client_sockets.remove(current_socket)
+                        del counters[current_socket]
+                        current_socket.close()
+                        numberOfClients -= 1
+                        print 'floodattack!! connection with a client is over. number of clients is {}\n'.format(str(numberOfClients))
+                        continue
+                    else:
+                        counters[current_socket][0] = 0
+                        counters[current_socket][1] = time.time()
+            except:
+                numberOfClients -= 1
+                open_client_sockets.remove(current_socket)
+                print "connection was forcibly closed. number of clients is {}\n".format(str(numberOfClients))
+                continue
             if data == "bye":
                 open_client_sockets.remove(current_socket)
                 del counters[current_socket]
@@ -51,12 +58,16 @@ while True:
                 print 'connection with a client is over. numebr of clients is {}\n'.format(str(numberOfClients))
             else:
                 if data == "time":
-                    messages_to_send.append((current_socket, 'the time is : 12:00'+str(datetime.now())))
+                    messages_to_send.append((current_socket, 'the time is : '+str(datetime.now())))
                 elif data == "details":
                     messages_to_send.append((current_socket, 'IP:{}, port:{}'.format("192.168.56.1", "4444")))
                 elif data == "rand":
                     messages_to_send.append((current_socket, 'your random number is {}'.format(str(random.randint(0, 100)))))
                 else:
                     messages_to_send.append((current_socket, 'I do not know what to do with {}'.format(data)))
-
-    send_waiting_messages(wlist, messages_to_send)
+    try:
+        send_waiting_messages(wlist, messages_to_send)
+    except:
+        numberOfClients -= 1
+        open_client_sockets.remove(current_socket)
+        print "connection was forcibly closed. number of clients is {}\n".format(str(numberOfClients))
